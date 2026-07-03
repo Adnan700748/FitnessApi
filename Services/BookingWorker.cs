@@ -1,11 +1,13 @@
 namespace FitnessApi.Services;
 
-public class BookingWorker(IBookingService bookingService)
+public class BookingWorker(IServiceScopeFactory scopeFactory)
 {
     public void ProcessBatch()
     {
-        // Simulate background work – this will cause a captive dependency problem
-        // because BookingWorker is Singleton, but IBookingService is Scoped.
+        // Create a short-lived scope for each batch
+        using var scope = scopeFactory.CreateScope();
+        var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+
         var all = bookingService.GetAllAsync().GetAwaiter().GetResult();
         Console.WriteLine($"Batch processed {all.Count} bookings.");
     }
