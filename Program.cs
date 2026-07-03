@@ -2,6 +2,7 @@ using FitnessApi.Middleware;
 using FitnessApi.Auth;
 using Microsoft.AspNetCore.Authentication;
 using FitnessApi.Services;
+using FitnessApi.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,11 @@ builder.Host.UseDefaultServiceProvider(options =>
     options.ValidateScopes = true;
     options.ValidateOnBuild = true;
 });
+// Options pattern with startup validation
+builder.Services.AddOptions<PaymentOptions>()
+    .BindConfiguration("Payments")
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
 var app = builder.Build();
 
 // Middleware pipeline (Order: Logging → Auth → Routing → Endpoints)
