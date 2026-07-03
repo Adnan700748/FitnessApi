@@ -1,16 +1,16 @@
-var builder = WebApplication.CreateBuilder(args);
+using FitnessApi.Middleware;
 
-// Add services to the container.
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Order matters: RequestLoggingMiddleware must be FIRST
+app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
+app.UseRouting();
 
 app.MapControllers();
 

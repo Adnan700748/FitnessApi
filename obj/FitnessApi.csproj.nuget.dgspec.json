@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\Owner\\Desktop\\Lab\\FitnessApi\\FitnessApi\\FitnessApi.csproj": {}
+    "C:\\Users\\Owner\\Desktop\\Lab\\FitnessApi\\FitnessApi\\FitnessApi.csproj": {}
   },
   "projects": {
-    "c:\\Users\\Owner\\Desktop\\Lab\\FitnessApi\\FitnessApi\\FitnessApi.csproj": {
+    "C:\\Users\\Owner\\Desktop\\Lab\\FitnessApi\\FitnessApi\\FitnessApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\Owner\\Desktop\\Lab\\FitnessApi\\FitnessApi\\FitnessApi.csproj",
+        "projectUniqueName": "C:\\Users\\Owner\\Desktop\\Lab\\FitnessApi\\FitnessApi\\FitnessApi.csproj",
         "projectName": "FitnessApi",
-        "projectPath": "c:\\Users\\Owner\\Desktop\\Lab\\FitnessApi\\FitnessApi\\FitnessApi.csproj",
+        "projectPath": "C:\\Users\\Owner\\Desktop\\Lab\\FitnessApi\\FitnessApi\\FitnessApi.csproj",
         "packagesPath": "C:\\Users\\Owner\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\Owner\\Desktop\\Lab\\FitnessApi\\FitnessApi\\obj\\",
+        "outputPath": "C:\\Users\\Owner\\Desktop\\Lab\\FitnessApi\\FitnessApi\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
