@@ -3,11 +3,13 @@ using FitnessApi.Auth;
 using Microsoft.AspNetCore.Authentication;
 using FitnessApi.Services;
 using FitnessApi.Options;
+using FitnessApi.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Register services
 builder.Services.AddControllers();
+builder.Services.AddProblemDetails();
 
 builder.Services
     .AddAuthentication("Fitness")
@@ -36,11 +38,17 @@ var app = builder.Build();
 app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.UseHttpsRedirection();
+app.UseExceptionHandler();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseRouting();
+
+app.MapGet("/api/error", () =>
+{
+    throw new FitnessDatabaseException("Simulated database failure for ProblemDetails testing");
+});
 
 // Protected route (same assessment endpoint as lab)
 app.MapGet("/api/assessments/results", () =>
