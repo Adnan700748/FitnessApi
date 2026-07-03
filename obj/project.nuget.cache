@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "tK9FoShnkR4=",
+  "dgSpecHash": "IpbIHrioVPg=",
   "success": true,
   "projectFilePath": "C:\\Users\\Owner\\Desktop\\Lab\\FitnessApi\\FitnessApi\\FitnessApi.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\Owner\\.nuget\\packages\\scalar.aspnetcore\\2.16.10\\scalar.aspnetcore.2.16.10.nupkg.sha512"
+  ],
   "logs": []
 }

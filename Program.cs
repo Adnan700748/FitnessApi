@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using FitnessApi.Services;
 using FitnessApi.Options;
 using FitnessApi.Exceptions;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddProblemDetails();
 
+builder.Services.AddOpenApi();
 builder.Services
     .AddAuthentication("Fitness")
     .AddScheme<AuthenticationSchemeOptions, FitnessAuthHandler>("Fitness", null);
@@ -44,6 +46,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseRouting();
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    app.MapScalarApiReference(); // Interactive API explorer at /scalar/v1
+}
 
 app.MapGet("/api/error", () =>
 {

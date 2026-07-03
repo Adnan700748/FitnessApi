@@ -27,3 +27,4 @@ C:\Users\Owner\Desktop\Lab\FitnessApi\FitnessApi\obj\Debug\net10.0\FitnessApi.pd
 C:\Users\Owner\Desktop\Lab\FitnessApi\FitnessApi\obj\Debug\net10.0\FitnessApi.genruntimeconfig.cache
 C:\Users\Owner\Desktop\Lab\FitnessApi\FitnessApi\obj\Debug\net10.0\ref\FitnessApi.dll
 C:\Users\Owner\Desktop\Lab\FitnessApi\FitnessApi\obj\Debug\net10.0\FitnessApi.sourcelink.json
+C:\Users\Owner\Desktop\Lab\FitnessApi\FitnessApi\obj\Debug\net10.0\FitnessApi.csproj.AssemblyReference.cache
