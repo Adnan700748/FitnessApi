@@ -15,7 +15,9 @@ builder.Services.AddControllers();
 builder.Services.AddProblemDetails();
 
 builder.Services.AddDbContext<FitnessDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("FitnessDatabase")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("FitnessDatabase"))
+        .LogTo(Console.WriteLine, LogLevel.Information)
+        .EnableSensitiveDataLogging());
 
 builder.Services.AddOpenApi();
 builder.Services
