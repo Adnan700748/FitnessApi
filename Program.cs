@@ -5,12 +5,20 @@ using FitnessApi.Services;
 using FitnessApi.Options;
 using FitnessApi.Exceptions;
 using Scalar.AspNetCore;
+using FitnessApi.Data;
+using Microsoft.EntityFrameworkCore;
+using FitnessApi.Dtos;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Register services
 builder.Services.AddControllers();
 builder.Services.AddProblemDetails();
+
+builder.Services.AddDbContext<FitnessDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("FitnessDatabase"))
+        .LogTo(Console.WriteLine, LogLevel.Information)
+        .EnableSensitiveDataLogging());
 
 builder.Services.AddOpenApi();
 builder.Services
@@ -19,7 +27,7 @@ builder.Services
 builder.Services.AddAuthorization();
 // Register services (scoped = per request)
 builder.Services.AddScoped<IBookingService, BookingService>();
-
+builder.Services.AddScoped<IFitnessClassService, FitnessClassService>();
 // This is the BUG: BookingWorker is Singleton, but it depends on IBookingService (Scoped)
 builder.Services.AddSingleton<BookingWorker>();
 
@@ -53,6 +61,24 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference(); // Interactive API explorer at /scalar/v1
 }
 
+app.MapGet("/api/test/classes", async (
+    [AsParameters] PagedRequest request,
+    IFitnessClassService service,
+    CancellationToken ct) =>
+{
+    var result = await service.GetClassesPagedAsync(
+        request.Page, request.PageSize, request.Search, ct);
+    return Results.Ok(result);
+});
+
+app.MapGet("/api/test/top5", async (
+    IFitnessClassService service,
+    CancellationToken ct) =>
+{
+    var result = await service.GetTop5ClassesByBookingsAsync(ct);
+    return Results.Ok(result);
+});
+
 app.MapGet("/api/error", () =>
 {
     throw new FitnessDatabaseException("Simulated database failure for ProblemDetails testing");
@@ -64,5 +90,12 @@ app.MapGet("/api/assessments/results", () =>
     .RequireAuthorization();
 
 app.MapControllers();
+
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<FitnessDbContext>();
+    await DataSeeder.SeedAsync(context);
+}
 
 app.Run();
