@@ -5,12 +5,17 @@ using FitnessApi.Services;
 using FitnessApi.Options;
 using FitnessApi.Exceptions;
 using Scalar.AspNetCore;
+using FitnessApi.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Register services
 builder.Services.AddControllers();
 builder.Services.AddProblemDetails();
+
+builder.Services.AddDbContext<FitnessDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("FitnessDatabase")));
 
 builder.Services.AddOpenApi();
 builder.Services
