@@ -16,5 +16,9 @@ public class AssessmentConfiguration : IEntityTypeConfiguration<Assessment>
             .HasPrecision(6, 2);
         builder.Property(a => a.Weight)
             .HasPrecision(4, 2);
+            builder.HasOne(a => a.FitnessClass)
+    .WithMany() // or WithMany(f => f.Assessments) if you add the collection
+    .HasForeignKey(a => a.FitnessClassId)
+    .OnDelete(DeleteBehavior.Restrict);
     }
 }

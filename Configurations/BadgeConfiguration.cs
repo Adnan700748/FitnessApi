@@ -16,5 +16,14 @@ public class BadgeConfiguration : IEntityTypeConfiguration<Badge>
             .IsRequired()
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
         builder.HasIndex(b => b.SerialNumber).IsUnique();
+        builder.HasOne(b => b.Member)
+    .WithMany()
+    .HasForeignKey(b => b.MemberId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+builder.HasOne(b => b.FitnessClass)
+    .WithMany()
+    .HasForeignKey(b => b.FitnessClassId)
+    .OnDelete(DeleteBehavior.Restrict);
     }
 }

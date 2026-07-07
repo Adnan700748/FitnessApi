@@ -7,6 +7,7 @@ using FitnessApi.Exceptions;
 using Scalar.AspNetCore;
 using FitnessApi.Data;
 using Microsoft.EntityFrameworkCore;
+using FitnessApi.Dtos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +60,24 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference(); // Interactive API explorer at /scalar/v1
 }
+
+app.MapGet("/api/test/classes", async (
+    [AsParameters] PagedRequest request,
+    IFitnessClassService service,
+    CancellationToken ct) =>
+{
+    var result = await service.GetClassesPagedAsync(
+        request.Page, request.PageSize, request.Search, ct);
+    return Results.Ok(result);
+});
+
+app.MapGet("/api/test/top5", async (
+    IFitnessClassService service,
+    CancellationToken ct) =>
+{
+    var result = await service.GetTop5ClassesByBookingsAsync(ct);
+    return Results.Ok(result);
+});
 
 app.MapGet("/api/error", () =>
 {

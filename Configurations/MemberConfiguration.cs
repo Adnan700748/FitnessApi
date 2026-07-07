@@ -18,5 +18,9 @@ public class MemberConfiguration : IEntityTypeConfiguration<Member>
         builder.Property(m => m.MembershipLevel)
             .HasPrecision(3, 2); // e.g. 3.80
         builder.HasIndex(m => m.MembershipNumber).IsUnique();
+        builder.HasMany(m => m.Bookings)
+    .WithOne(b => b.Member)
+    .HasForeignKey(b => b.MemberId)
+    .OnDelete(DeleteBehavior.Restrict);
     }
 }

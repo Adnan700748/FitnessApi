@@ -18,5 +18,9 @@ public class FitnessClassConfiguration : IEntityTypeConfiguration<FitnessClass>
         builder.Property(f => f.MaxCapacity)
             .IsRequired();
         builder.HasIndex(f => f.Code).IsUnique();
+        builder.HasMany(f => f.Bookings)
+    .WithOne(b => b.FitnessClass)
+    .HasForeignKey(b => b.FitnessClassId)
+    .OnDelete(DeleteBehavior.Restrict); // Prevent deleting a class with bookings
     }
 }
