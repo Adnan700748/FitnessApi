@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FitnessApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cc975f9b4b06060528bcd9d65bf7da4f3cbc81f5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+65b5694491b81696e1fab798ca61210fde1a4895")]
 [assembly: System.Reflection.AssemblyProductAttribute("FitnessApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FitnessApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
