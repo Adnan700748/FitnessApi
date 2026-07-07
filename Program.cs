@@ -26,7 +26,7 @@ builder.Services
 builder.Services.AddAuthorization();
 // Register services (scoped = per request)
 builder.Services.AddScoped<IBookingService, BookingService>();
-
+builder.Services.AddScoped<IFitnessClassService, FitnessClassService>();
 // This is the BUG: BookingWorker is Singleton, but it depends on IBookingService (Scoped)
 builder.Services.AddSingleton<BookingWorker>();
 
