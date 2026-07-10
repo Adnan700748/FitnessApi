@@ -95,7 +95,13 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference(); // Interactive API explorer at /scalar/v1
 }
-
+// After app.Environment.IsDevelopment() block for DataSeeder...
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<FitnessDbContext>();
+    await DataSeeder.SeedAsync(context);
+}
 app.MapGet("/api/test/classes", async (
     [AsParameters] PagedRequest request,
     IFitnessClassService service,
@@ -122,8 +128,9 @@ app.MapGet("/api/error", () =>
 // Protected route (same assessment endpoint as lab)
 app.MapGet("/api/assessments/results", () =>
     Results.Ok(new { classCode = "YOG-101", memberId = "M-001", score = "A" }))
-    .RequireAuthorization();
-
+    .RequireAuthorization("Admin"); // <-- Only admins
+app.MapGet("/api/member/profile", () => Results.Ok(new { message = "Welcome member!" }))
+    .RequireAuthorization("Member");
 app.MapControllers();
 
 if (app.Environment.IsDevelopment())
