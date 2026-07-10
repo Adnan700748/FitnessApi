@@ -7,7 +7,10 @@ public class FitnessClass
     public required string Title { get; set; }
     public int MaxCapacity { get; set; }
 
-    // 🆕 Instructor relationship
+    // 🆕 Schedule
+    public DateTime ScheduledAt { get; set; }
+    public int DurationMinutes { get; set; } = 60;
+
     public int InstructorId { get; set; }
     public Instructor Instructor { get; set; } = null!;
 
