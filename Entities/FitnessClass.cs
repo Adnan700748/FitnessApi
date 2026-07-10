@@ -7,5 +7,9 @@ public class FitnessClass
     public required string Title { get; set; }
     public int MaxCapacity { get; set; }
 
+    // 🆕 Instructor relationship
+    public int InstructorId { get; set; }
+    public Instructor Instructor { get; set; } = null!;
+
     public ICollection<Booking> Bookings { get; set; } = [];
 }

@@ -22,5 +22,9 @@ public class FitnessClassConfiguration : IEntityTypeConfiguration<FitnessClass>
     .WithOne(b => b.FitnessClass)
     .HasForeignKey(b => b.FitnessClassId)
     .OnDelete(DeleteBehavior.Restrict); // Prevent deleting a class with bookings
+    builder.HasOne(f => f.Instructor)
+    .WithMany(i => i.Classes)
+    .HasForeignKey(f => f.InstructorId)
+    .OnDelete(DeleteBehavior.Restrict);
     }
 }
