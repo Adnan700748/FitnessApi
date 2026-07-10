@@ -26,5 +26,11 @@ public class FitnessClassConfiguration : IEntityTypeConfiguration<FitnessClass>
     .WithMany(i => i.Classes)
     .HasForeignKey(f => f.InstructorId)
     .OnDelete(DeleteBehavior.Restrict);
+    builder.Property(f => f.ScheduledAt)
+    .IsRequired();
+
+builder.Property(f => f.DurationMinutes)
+    .IsRequired()
+    .HasDefaultValue(60);
     }
 }
