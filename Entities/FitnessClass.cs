@@ -11,6 +11,7 @@ public class FitnessClass
     public DateTime ScheduledAt { get; set; }
     public int DurationMinutes { get; set; } = 60;
 
+
     public int InstructorId { get; set; }
     public Instructor Instructor { get; set; } = null!;
 
