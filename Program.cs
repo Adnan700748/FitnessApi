@@ -1,30 +1,26 @@
 using FitnessApi.Middleware;
-using FitnessApi.Auth;
-using Microsoft.AspNetCore.Authentication;
 using FitnessApi.Services;
 using FitnessApi.Options;
 using FitnessApi.Exceptions;
-using Scalar.AspNetCore;
 using FitnessApi.Data;
-using Microsoft.EntityFrameworkCore;
 using FitnessApi.Dtos;
-using System.Text;
+using Scalar.AspNetCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using FitnessApi.Services;
-
+using System.Text;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Register services
+// ===== Services =====
 builder.Services.AddControllers();
+builder.Services.AddProblemDetails();
+builder.Services.AddOpenApi();
 
-// ... after builder.Services.AddControllers() ...
-
-// 🆕 JWT Settings
+// JWT Authentication (replaces dummy Fitness auth)
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
-
-// 🆕 Authentication (JWT)
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -40,68 +36,65 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
         };
     });
-
 builder.Services.AddAuthorization();
 
-// 🆕 Register services
+// DI services
+builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<IFitnessClassService, FitnessClassService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-// ... remove the old "Fitness" auth and TrainingAuthHandler references
+// BookingWorker – intentionally singleton to demonstrate captive dependency (fixed with IServiceScopeFactory)
+builder.Services.AddSingleton<BookingWorker>();
 
-builder.Services.AddProblemDetails();
-
+// EF Core
 builder.Services.AddDbContext<FitnessDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("FitnessDatabase"))
         .LogTo(Console.WriteLine, LogLevel.Information)
         .EnableSensitiveDataLogging());
 
-builder.Services.AddOpenApi();
-builder.Services
-    .AddAuthentication("Fitness")
-    .AddScheme<AuthenticationSchemeOptions, FitnessAuthHandler>("Fitness", null);
-builder.Services.AddAuthorization();
-// Register services (scoped = per request)
-builder.Services.AddScoped<IBookingService, BookingService>();
-builder.Services.AddScoped<IFitnessClassService, FitnessClassService>();
-// This is the BUG: BookingWorker is Singleton, but it depends on IBookingService (Scoped)
-builder.Services.AddSingleton<BookingWorker>();
-
-// Enable captive dependency detection
-builder.Host.UseDefaultServiceProvider(options =>
-{
-    options.ValidateScopes = true;
-    options.ValidateOnBuild = true;
-});
 // Options pattern with startup validation
 builder.Services.AddOptions<PaymentOptions>()
     .BindConfiguration("Payments")
     .ValidateDataAnnotations()
     .ValidateOnStart();
+
+// Captive dependency detection
+builder.Host.UseDefaultServiceProvider(options =>
+{
+    options.ValidateScopes = true;
+    options.ValidateOnBuild = true;
+});
+
 var app = builder.Build();
 
-// Middleware pipeline (Order: Logging → Auth → Routing → Endpoints)
-app.UseMiddleware<RequestLoggingMiddleware>();
+// ===== Middleware Pipeline (order matters) =====
+app.UseMiddleware<RequestLoggingMiddleware>();   // Must be first
 
 app.UseHttpsRedirection();
 app.UseExceptionHandler();
+app.UseStatusCodePages();
+
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseRouting();
-
+// ===== Development-only endpoints =====
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference(); // Interactive API explorer at /scalar/v1
+    app.MapScalarApiReference();
 }
-// After app.Environment.IsDevelopment() block for DataSeeder...
+
+// ===== Seed data (Development only) =====
 if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();
     var context = scope.ServiceProvider.GetRequiredService<FitnessDbContext>();
     await DataSeeder.SeedAsync(context);
 }
+
+// ===== Test/Diagnostic endpoints =====
 app.MapGet("/api/test/classes", async (
     [AsParameters] PagedRequest request,
     IFitnessClassService service,
@@ -125,19 +118,15 @@ app.MapGet("/api/error", () =>
     throw new FitnessDatabaseException("Simulated database failure for ProblemDetails testing");
 });
 
-// Protected route (same assessment endpoint as lab)
+// ===== Protected endpoints =====
 app.MapGet("/api/assessments/results", () =>
     Results.Ok(new { classCode = "YOG-101", memberId = "M-001", score = "A" }))
-    .RequireAuthorization("Admin"); // <-- Only admins
+    .RequireAuthorization("Admin");
+
 app.MapGet("/api/member/profile", () => Results.Ok(new { message = "Welcome member!" }))
     .RequireAuthorization("Member");
-app.MapControllers();
 
-if (app.Environment.IsDevelopment())
-{
-    using var scope = app.Services.CreateScope();
-    var context = scope.ServiceProvider.GetRequiredService<FitnessDbContext>();
-    await DataSeeder.SeedAsync(context);
-}
+// ===== Controllers =====
+app.MapControllers();
 
 app.Run();
